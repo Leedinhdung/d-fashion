@@ -1,4 +1,5 @@
 import React from 'react'
+import { ICategory } from '../../../types/category'
 interface Column {
     header: string
     accessor: string
@@ -6,7 +7,7 @@ interface Column {
 }
 interface DataTableProps {
     columns: Column[]
-    data: any[]
+    data: ICategory[]
     onRowClick?: (row: any) => void
 }
 const DataTable = ({ columns, data, onRowClick }: DataTableProps) => {
