@@ -11,6 +11,7 @@ import ProductDetail from "../pages/clients/ProductDetail";
 import DetailProduct from "../pages/admin/products/ProductDetail";
 import Products from "../pages/clients/Products";
 import CategoryProducts from "../pages/clients/CategoryProducts";
+import CategoriesTrash from "../pages/admin/categories/CategoriesTrash";
 
 export const clientRoutes = [
 	{ path: routes.home, layout: ClientLayout, element: Home },
@@ -28,11 +29,15 @@ export const clientRoutes = [
 		layout: ClientLayout,
 		element: Blog,
 	},
-
 ];
 export const adminRoutes = [
 	{ path: routes.dashboard, layout: DashboardLayout, element: Dashboard },
 	{ path: routes.categories, layout: DashboardLayout, element: CategoriesList },
+	{
+		path: routes.categoriesTrash,
+		layout: DashboardLayout,
+		element: CategoriesTrash,
+	},
 	{ path: routes.products, layout: DashboardLayout, element: ProductsList },
 	{
 		path: routes.productDetail,

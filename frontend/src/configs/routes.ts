@@ -8,7 +8,9 @@ const routes = {
 	productByCate:"danh-muc/:slug",
 	//Admin
 	dashboard: "/quan-tri",
+	//Category
 	categories: "/quan-tri/danh-muc",
+	categoriesTrash: "/quan-tri/danh-muc/thung-rac",
 	products: "/quan-tri/san-pham",
 	productDetail: "quan-tri/san-pham/:slug",
 	orders: "/quan-tri/don-hang",
