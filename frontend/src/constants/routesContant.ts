@@ -8,10 +8,11 @@ import Blog from "../pages/clients/Blog";
 import Contact from "../pages/clients/Contact";
 import Home from "../pages/clients/Home";
 import ProductDetail from "../pages/clients/ProductDetail";
-import DetailProduct from "../pages/admin/products/ProductDetail";
 import Products from "../pages/clients/Products";
 import CategoryProducts from "../pages/clients/CategoryProducts";
 import CategoriesTrash from "../pages/admin/categories/CategoriesTrash";
+import ProductForm from "../pages/admin/products/ProductForm";
+import ProductsTrash from "../pages/admin/products/ProductsTrash";
 
 export const clientRoutes = [
 	{ path: routes.home, layout: ClientLayout, element: Home },
@@ -39,9 +40,11 @@ export const adminRoutes = [
 		element: CategoriesTrash,
 	},
 	{ path: routes.products, layout: DashboardLayout, element: ProductsList },
+	{ path: routes.addProduct, layout: DashboardLayout, element: ProductForm },
+	{ path: routes.editProduct, layout: DashboardLayout, element: ProductForm },
 	{
-		path: routes.productDetail,
+		path: routes.productsTrash,
 		layout: DashboardLayout,
-		element: DetailProduct,
+		element: ProductsTrash,
 	},
 ];
