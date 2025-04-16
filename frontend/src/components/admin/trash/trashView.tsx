@@ -1,28 +1,28 @@
 import { RefreshCwIcon, Trash2Icon } from 'lucide-react'
 import DataTable from '../dashboard/DataTable'
-import { ICategory } from '../../../types/category'
 
-interface TableColumn {
+
+export interface TableColumn<T> {
     header: string;
     accessor: string;
-    cell?: (value: string, row: ICategory) => React.ReactNode;
+    cell?: (value: string, row: T) => React.ReactNode;
 }
-interface TrashViewProps {
+interface TrashViewProps<T> {
     title: string
     description: string
-    data: ICategory[]
-    columns: TableColumn[]
+    data: T[]
+    columns: TableColumn<T>[]
     onRestore: (id: string) => void
     onPermanentDelete: (id: string) => void
 }
-const TrashView = ({
+const TrashView = <T extends { _id: string }>({
     title,
     description,
     data,
     columns,
     onRestore,
     onPermanentDelete,
-}: TrashViewProps) => {
+}: TrashViewProps<T>) => {
     const trashColumns = [
         ...columns,
         {

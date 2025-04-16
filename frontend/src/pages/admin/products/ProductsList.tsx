@@ -1,94 +1,49 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PlusIcon, SearchIcon } from 'lucide-react'
+import { PlusIcon, SearchIcon, Trash2Icon, TrashIcon } from 'lucide-react'
 import DataTable from '../../../components/admin/dashboard/DataTable'
 import routes from '../../../configs/routes'
+import { useGetAllProducts, useSoftDeleteProduct } from '../../../hooks/product/useProduct'
+import { IProduct } from '../../../types/product'
+interface Image {
+    url: string
+    fileName: string
+}
 const ProductsList = () => {
     const navigate = useNavigate()
-    // Mock products data
-    const [products] = useState([
-        {
-            id: '1',
-            name: 'Wireless Headphones',
-            category: 'Electronics',
-            price: '$129.99',
-            stock: 45,
-            status: 'Active',
-        },
-        {
-            id: '2',
-            name: 'Smart Watch',
-            category: 'Electronics',
-            price: '$199.99',
-            stock: 32,
-            status: 'Active',
-        },
-        {
-            id: '3',
-            name: 'Bluetooth Speaker',
-            category: 'Electronics',
-            price: '$89.99',
-            stock: 18,
-            status: 'Active',
-        },
-        {
-            id: '4',
-            name: 'Cotton T-Shirt',
-            category: 'Clothing',
-            price: '$24.99',
-            stock: 120,
-            status: 'Active',
-        },
-        {
-            id: '5',
-            name: 'Denim Jeans',
-            category: 'Clothing',
-            price: '$59.99',
-            stock: 85,
-            status: 'Active',
-        },
-        {
-            id: '6',
-            name: 'Running Shoes',
-            category: 'Footwear',
-            price: '$89.99',
-            stock: 28,
-            status: 'Active',
-        },
-        {
-            id: '7',
-            name: 'Coffee Maker',
-            category: 'Home & Kitchen',
-            price: '$79.99',
-            stock: 14,
-            status: 'Low Stock',
-        },
-        {
-            id: '8',
-            name: 'Stainless Steel Water Bottle',
-            category: 'Sports & Outdoors',
-            price: '$19.99',
-            stock: 0,
-            status: 'Out of Stock',
-        },
-    ])
+    const { data: products = [], isLoading } = useGetAllProducts()
+    const { mutateAsync: softDeleteProduct } = useSoftDeleteProduct()
+
     const [searchTerm, setSearchTerm] = useState('')
     const [categoryFilter, setCategoryFilter] = useState('')
     const [statusFilter, setStatusFilter] = useState('')
-    // Get unique categories for filter dropdown
-    const categories = [...new Set(products.map((product) => product.category))]
-    const statuses = [...new Set(products.map((product) => product.status))]
+
+    const categories = useMemo(() => {
+        return [...new Set(products.map((product) => product.categoryId).filter(Boolean))]
+    }, [products])
+
+    const statuses = useMemo(() => {
+        return [...new Set(products.map((product) => product.status).filter(Boolean))]
+    }, [products])
+
     // Filtered products
-    const filteredProducts = products.filter((product) => {
-        const matchesSearch = product.name
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        const matchesCategory = categoryFilter
-            ? product.category === categoryFilter
-            : true
-        const matchesStatus = statusFilter ? product.status === statusFilter : true
-        return matchesSearch && matchesCategory && matchesStatus
-    })
+    const filteredProducts = useMemo(() => {
+        if (!products || !Array.isArray(products)) return []
+
+        return products.filter((product) => {
+            const matchesSearch = product.name
+                ?.toLowerCase()
+                .includes(searchTerm.toLowerCase()) ?? false
+            const matchesCategory = categoryFilter
+                ? product.categoryId === categoryFilter
+                : true
+            const matchesStatus = statusFilter
+                ? product.status === statusFilter
+                : true
+            return matchesSearch && matchesCategory && matchesStatus
+        })
+    }, [products, searchTerm, categoryFilter, statusFilter])
+
     // Columns for products table
     const productColumns = [
         {
@@ -104,8 +59,26 @@ const ProductsList = () => {
             accessor: 'price',
         },
         {
-            header: 'Stock',
-            accessor: 'stock',
+            header: 'Image',
+            accessor: 'images',
+            cell: (images: Image[]) => (
+                images && images.length > 0 ? (
+                    <img
+                        src={images[0].url}
+                        alt="Product"
+                        className="h-10 w-10 object-cover rounded"
+                        onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/40'
+                        }}
+                    />
+                ) : (
+                    <img
+                        src="https://via.placeholder.com/40"
+                        alt="No image"
+                        className="h-10 w-10 object-cover rounded"
+                    />
+                )
+            ),
         },
         {
             header: 'Status',
@@ -134,7 +107,29 @@ const ProductsList = () => {
                 )
             },
         },
+        {
+            header: 'Actions',
+            accessor: '_id',
+            cell: (value: string, row: IProduct) => (
+                <div className="flex space-x-2">
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            handleDelete(row)
+                        }}
+                        className="p-1 text-red-600 hover:text-red-800"
+                    >
+                        <TrashIcon size={16} />
+                    </button>
+                </div >
+            ),
+        },
     ]
+    const handleDelete = async (product: IProduct) => {
+        await softDeleteProduct(product._id)
+    }
+    if (isLoading) return <div className="text-center py-4">Loading...</div>
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -144,13 +139,23 @@ const ProductsList = () => {
                         Manage your product inventory
                     </p>
                 </div>
-                <button
-                    onClick={() => navigate('/products/new')}
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                    <PlusIcon className="mr-2 h-4 w-4" />
-                    Add Product
-                </button>
+                <div className="flex space-x-4">
+                    <button
+                        onClick={() => navigate(routes.productsTrash)}
+                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        <Trash2Icon className="mr-2 h-4 w-4" />
+                        Trash
+                    </button>
+                    <button
+                        onClick={() => navigate(routes.addProduct)}
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        <PlusIcon className="mr-2 h-4 w-4" />
+                        Add Product
+                    </button>
+                </div>
+
             </div>
             {/* Filters */}
             <div className="bg-white rounded-lg shadow p-5">
@@ -215,10 +220,11 @@ const ProductsList = () => {
                 <DataTable
                     columns={productColumns}
                     data={filteredProducts}
-                    onRowClick={() => navigate(routes.productDetail.replace('quan-tri/san-pham/:slug','1'))}
+                    onRowClick={(row) => navigate(routes.editProduct.replace(':id', row?._id))}
                 />
             </div>
         </div>
     )
 }
+
 export default ProductsList

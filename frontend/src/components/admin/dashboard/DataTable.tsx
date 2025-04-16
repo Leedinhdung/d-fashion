@@ -1,16 +1,18 @@
 import React from 'react'
-import { ICategory } from '../../../types/category'
-interface Column {
+
+interface Column<T> {
     header: string
-    accessor: string
-    cell?: (value: any, row: any) => React.ReactNode
+    accessor: keyof T
+    cell?: (value: any, row: T) => React.ReactNode
 }
-interface DataTableProps {
-    columns: Column[]
-    data: ICategory[]
-    onRowClick?: (row: any) => void
+
+interface DataTableProps<T> {
+    columns: Column<T>[]
+    data: T[]
+    onRowClick?: (row: T) => void
 }
-const DataTable = ({ columns, data, onRowClick }: DataTableProps) => {
+
+const DataTable = <T,>({ columns, data, onRowClick }: DataTableProps<T>) => {
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -41,7 +43,9 @@ const DataTable = ({ columns, data, onRowClick }: DataTableProps) => {
                                 >
                                     {column.cell
                                         ? column.cell(row[column.accessor], row)
-                                        : row[column.accessor]}
+                                        : typeof row[column.accessor] === 'object'
+                                        ? JSON.stringify(row[column.accessor]) 
+                                        : row[column.accessor] as React.ReactNode}
                                 </td>
                             ))}
                         </tr>
@@ -51,4 +55,5 @@ const DataTable = ({ columns, data, onRowClick }: DataTableProps) => {
         </div>
     )
 }
+
 export default DataTable

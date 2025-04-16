@@ -74,7 +74,7 @@ export const getAllCategoriesTrash = async (
 	res: express.Response
 ) => {
 	try {
-		const category = await CategorySchema.find({ isDeleted: true });
+		const category = await CategorySchema.find({ isDeleted: false });
 		res.status(200).send({
 			message: "Lấy danh mục thành công",
 			data: category,

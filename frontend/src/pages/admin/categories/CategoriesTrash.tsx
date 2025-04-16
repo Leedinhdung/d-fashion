@@ -1,5 +1,6 @@
-import TrashView from "../../../components/admin/trash/trashView"
+import TrashView, { TableColumn } from "../../../components/admin/trash/trashView"
 import { useDeleteCategory, useGetCategoriesTrash, useRestoreCategory } from "../../../hooks/category/useCategory"
+import { ICategory } from "../../../types/category"
 
 
 const CategoriesTrash = () => {
@@ -7,7 +8,7 @@ const CategoriesTrash = () => {
     const { mutateAsync: restoreCategory } = useRestoreCategory()
     const { mutateAsync: deleteCategory } = useDeleteCategory()
     if (isLoading) return 'Đang tải ...'
-    const columns = [
+    const columns: TableColumn<ICategory>[] = [
         {
             header: 'Category Name',
             accessor: 'name',
