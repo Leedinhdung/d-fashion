@@ -13,8 +13,11 @@ import CategoryProducts from "../pages/clients/CategoryProducts";
 import CategoriesTrash from "../pages/admin/categories/CategoriesTrash";
 import ProductForm from "../pages/admin/products/ProductForm";
 import ProductsTrash from "../pages/admin/products/ProductsTrash";
+import Auth from "../pages/clients/Auth";
 
 export const clientRoutes = [
+	{ path: routes.register, layout: ClientLayout, element: Auth },
+	{ path: routes.login, layout: ClientLayout, element: Auth },
 	{ path: routes.home, layout: ClientLayout, element: Home },
 	{ path: routes.blog, layout: ClientLayout, element: Blog },
 	{ path: routes.detailProduct, layout: ClientLayout, element: ProductDetail },

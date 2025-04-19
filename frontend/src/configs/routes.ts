@@ -1,4 +1,7 @@
 const routes = {
+	//Auth
+	login: "/dang-nhap",
+	register: "/dang-ky",
 	//Client
 	home: "/",
 	contact: "/lien-he",
