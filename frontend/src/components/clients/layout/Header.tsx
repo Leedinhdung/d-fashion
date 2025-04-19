@@ -13,11 +13,24 @@ import CartDropdown from '../cart/CartDropdown'
 import SearchInput from '../../ui/SearchInput'
 import { useCart } from '../../../contexts/clients/CartContext'
 import routes from '../../../configs/routes'
+import { useGetUserProfile } from '../../../hooks/auth/useAuth'
+import { toast } from 'react-toastify'
 const Header = () => {
+    const navigate = useNavigate()
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [isCartOpen, setIsCartOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
 
+    const { user } = useGetUserProfile()
+    const handleLogout = async () => {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user_data");
+        localStorage.removeItem("user_profile");
+        navigate(routes.login);
+        toast.success("Đăng xuất thành công");
+
+    }
     const { itemsCount } = useCart()
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen)
@@ -97,32 +110,32 @@ const Header = () => {
                         >
                             <SearchIcon size={20} />
                         </button>
-                        {/* {user ? (
-                            <div className="relative group">
-                                <button className="text-gray-700 hover:text-blue-900">
-                                    <UserIcon size={20} />
-                                </button>
-                                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md hidden group-hover:block">
-                                    <div className="px-4 py-2 border-b border-gray-100">
-                                        <p className="text-sm font-medium text-gray-900">
-                                            {user.name}
-                                        </p>
-                                        <p className="text-xs text-gray-500">{user.email}</p>
-                                    </div>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
-                                    >
-                                        <LogOutIcon size={16} className="mr-2" />
-                                        Sign out
-                                    </button>
-                                </div>
-                            </div>
-                        ) : (
-                            <Link to="/auth" className="text-gray-700 hover:text-blue-900">
+                        {user ? <div className="relative group">
+                            <button className="text-gray-700 hover:text-blue-900">
                                 <UserIcon size={20} />
-                            </Link>
-                        )} */}
+                            </button>
+                            <div className="absolute right-0 w-48 bg-white shadow-lg rounded-md hidden group-hover:block">
+                                <div className="px-4 py-2 border-b border-gray-100">
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {user.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500">{user.email}</p>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                                >
+                                    <LogOutIcon size={16} className="mr-2" />
+                                    Sign out
+                                </button>
+                            </div>
+                        </div> : <Link to={routes.login} className="text-gray-700 hover:text-blue-900">
+                            <UserIcon size={20} />
+                        </Link>}
+
+
+
+
                         <button
                             className="text-gray-700 hover:text-blue-900 relative"
                             onClick={() => setIsCartOpen(true)}

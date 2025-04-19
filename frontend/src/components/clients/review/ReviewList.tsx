@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Star, ImagePlus } from 'lucide-react'
 import Button from '../../ui/Button'
-import { useAuth } from '../../../contexts/clients/AuthContext'
+
 interface ReviewFormProps {
     productId: number
     onSubmit: (review: {
@@ -11,7 +11,7 @@ interface ReviewFormProps {
     }) => void
 }
 const ReviewForm: React.FC<ReviewFormProps> = ({ onSubmit }) => {
-    const { user } = useAuth()
+    const  user  = "abc"
     const [rating, setRating] = useState(0)
     const [hoverRating, setHoverRating] = useState(0)
     const [comment, setComment] = useState('')
